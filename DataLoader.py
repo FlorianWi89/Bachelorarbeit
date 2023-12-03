@@ -43,9 +43,9 @@ class DataLoader():
         data.to_parquet('train_data.parquet.gzip',compression='gzip') 
         
 
-#path = '/Users/florianwicher/Desktop/data/LeakageScenarios/'
-#DL = DataLoader(path)
+path = '/Users/florianwicher/Desktop/data/LeakageScenarios/'
+DL = DataLoader(path)
 
 
-#DL.load_and_save()
+DL.load_and_save()
 

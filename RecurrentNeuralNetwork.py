@@ -5,7 +5,7 @@ import tensorflow as tf
 
 class RecurrentNeuralNetwork():
 
-    def __init__(self, model_type = 'LSTM', units = 31):
+    def __init__(self, model_type = 'LSTM', units = 30):
         self.model = Sequential()
         self.units = units
         self.network_type = model_type
