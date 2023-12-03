@@ -1,6 +1,6 @@
 # Bachelorarbeit
 
-#Dataloader.py
+# Dataloader.py
 Klasse um die Trainingsdaten in ein einziges File zu packen
 
 ##FaultDetector.py
