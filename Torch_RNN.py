@@ -10,7 +10,7 @@ class Torch_RNN(nn.Module):
     def __init__(self):
         super(Torch_RNN, self).__init__()
         self.lstm1 = nn.RNN(30, 30, batch_first=True, bidirectional=False)
-        self.dropout = nn.Dropout(0.23)
+        self.dropout = nn.Dropout(0.2)
         self.lstm2 = nn.RNN(30, 30, batch_first=True, bidirectional=False)
         self.linear1 = nn.Linear(30, 15)
         self.tanh = nn.Tanh()
@@ -24,7 +24,6 @@ class Torch_RNN(nn.Module):
         out = self.linear1(out)
         out = self.tanh(out)
         out = self.linear2(out)
-        out = self.tanh(out)
         out = self.linear3(out)
         return out
     
@@ -36,7 +35,7 @@ class Torch_RNN(nn.Module):
         y_train = torch.tensor(y, dtype=torch.float32).view(-1, 1)
 
         # Erstellen von DataLoader-Objekten für das effiziente Laden von Daten während des Trainings
-        batch_size = 512
+        batch_size = batch_size
         train_dataset = TensorDataset(X_train, y_train)
         train_loader = DataLoader(train_dataset, batch_size=batch_size)
 

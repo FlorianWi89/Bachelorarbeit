@@ -46,18 +46,19 @@ class EnsembleSystem():
 
             #fit model based on the given model type
             if self.model_type in ['LSTM', 'GRU', 'RNN']:
+
                 model.fit(x_train, y_train, batch_size, epochs)
             else:
                 model.fit(x_train, y_train)
             
-            print(f"Fitted Model {pressure_node}")
-            print("#"*40)
+          
             
             #build fault detector   
             
             max_error, mean_error, min_error = model.get_max_mean_min_prediction_error(x_train, y_train)
             #print(f"Model {pressure_node} trained -- Mean Error: ",1.2 * mean_error)
-            
+            print(f"Fitted Model {pressure_node}")
+            print("#"*40)
             fault_detector = self.fault_detector(model, 1.2 * mean_error)
             
             #store model

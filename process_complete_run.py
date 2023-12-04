@@ -17,10 +17,10 @@ def process_complete_train_test_run(test_data_paths, test_data_files, result_pat
     data = pd.read_parquet(f'train_data_{scenario_type}.parquet.gzip').to_numpy().astype(np.float32)
 
     #choose the relative amount of trainig data
-    data = data[: int(0.01 * len(data))]
+    data = data[: int(1 * len(data))]
 
     #train the whole classifier ensemble of 29 models    
-    ensemble = train_model(data, 2, 29, model_type=model_type, batch_size=128, epochs=2)
+    ensemble = train_model(data, 2, 29, model_type=model_type, batch_size=256 , epochs=2)
     
     result = []
 

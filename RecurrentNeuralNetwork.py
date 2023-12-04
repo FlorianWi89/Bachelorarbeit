@@ -32,13 +32,6 @@ class RecurrentNeuralNetwork():
             self.model.add(Dense(15)),
             self.model.add(Dense(15)),
             self.model.add(Dense(1))
-
-        if self.network_type == 'RNN':
-            self.model.add(SimpleRNN(self.units, return_sequences=True, activation='tanh', dropout=0.2))
-            self.model.add(SimpleRNN(self.units, return_sequences=False, activation='tanh', dropout=0.2)),
-            self.model.add(Dense(15, activation = 'tanh')),
-            self.model.add(Dense(10, activation = 'tanh')),
-            self.model.add(Dense(1))
             
         self.model.compile(loss = 'mean_absolute_error',
                    optimizer ='adam',
