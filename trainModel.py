@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from FaultDetector import EnsembleSystem
+from Torch_RNN import Torch_RNN
 from RecurrentNeuralNetwork import RecurrentNeuralNetwork
 from LinearModel import LinearModel
 import os
@@ -23,9 +24,9 @@ def train_model(train_data, flow_nodes, pressure_nodes, model_type = 'LSTM', bat
         model_ensemble.fit_seq(train_data, batch_size, epochs)
         return model_ensemble
 
-    if model_type == 'Simple-RNN':
+    if model_type == 'RNN':
 
-        model_ensemble = EnsembleSystem(RecurrentNeuralNetwork, flow_nodes, pressure_nodes, model_type='Simple-RNN')
+        model_ensemble = EnsembleSystem(Torch_RNN, flow_nodes, pressure_nodes, model_type='RNN')
         model_ensemble.fit_seq(train_data, batch_size, epochs)
         return model_ensemble
 

@@ -1,19 +1,23 @@
 import pandas as pd
 import numpy as np
 import os
+import sys
 from tqdm import tqdm
 from trainModel import train_model
 from utils import  eval_anomaly_detection
 
 
 #function to process a complete train-test run
-def process_complete_train_test_run(test_data_paths, test_data_files, result_path, model_type):
+def process_complete_train_test_run(test_data_paths, test_data_files, result_path, model_type, scenario_type):
     
+    scenario_type = str(scenario_type).lower()
+    if scenario_type == 'sensorfault':
+        scenario_type= 'sensor_fault'
     #load the training data with reduced precision
-    data = pd.read_parquet('train_data_leakage.parquet.gzip').to_numpy().astype(np.float32)
+    data = pd.read_parquet(f'train_data_{scenario_type}.parquet.gzip').to_numpy().astype(np.float32)
 
     #choose the relative amount of trainig data
-    data = data[: int(0.2 * len(data))]
+    data = data[: int(0.01 * len(data))]
 
     #train the whole classifier ensemble of 29 models    
     ensemble = train_model(data, 2, 29, model_type=model_type, batch_size=128, epochs=2)
@@ -39,7 +43,7 @@ def process_complete_train_test_run(test_data_paths, test_data_files, result_pat
             scenario_id = test_data.split('/')[-1].split('_')[0]
     
             #load model test data
-            test_data = pd.read_parquet(test_data).to_numpy()
+            test_data = pd.read_parquet(test_data).to_numpy().astype(np.float32)
 
             #load metadata  
             labels = np.load(test_data_info, allow_pickle=True)['y']
@@ -49,11 +53,12 @@ def process_complete_train_test_run(test_data_paths, test_data_files, result_pat
             #let the models predict the sensor data and get suspicious points
             suspicious_time_points = ensemble.apply_detector(test_data)
             
+            
             faults_time = np.where(labels == 1)[0]
     
             # Remove all false alarms
             suspicious_time_points = list(filter(lambda t: t in faults_time, suspicious_time_points))
-
+            
             #get classification scores
             res = eval_anomaly_detection(suspicious_time_points, faults_time, labels)
             res["scenario"] = f'{folder_id}_{scenario_id}'
@@ -68,18 +73,21 @@ def process_complete_train_test_run(test_data_paths, test_data_files, result_pat
 
     
 if __name__ == "__main__":
+
+    scenario = sys.argv[1]
+    model = sys.argv[2]
     
-    test_data_path_0 = '/Users/florianwicher/Desktop/TestData/LeakageScenariosTest_0'
-    test_data_path_1 = '/Users/florianwicher/Desktop/TestData/LeakageScenariosTest_1'
-    test_data_path_2 = '/Users/florianwicher/Desktop/TestData/LeakageScenariosTest_2'
-    test_data_path_3 = '/Users/florianwicher/Desktop/TestData/LeakageScenariosTest_3'
-    test_data_path_4 = '/Users/florianwicher/Desktop/TestData/LeakageScenariosTest_4'
-    test_data_path_5 = '/Users/florianwicher/Desktop/TestData/LeakageScenariosTest_5'
+    test_data_path_0 = f'/Users/florianwicher/Desktop/TestData/{scenario}ScenariosTest_0'
+    test_data_path_1 = f'/Users/florianwicher/Desktop/TestData/{scenario}ScenariosTest_1'
+    test_data_path_2 = f'/Users/florianwicher/Desktop/TestData/{scenario}ScenariosTest_2'
+    test_data_path_3 = f'/Users/florianwicher/Desktop/TestData/{scenario}ScenariosTest_3'
+    test_data_path_4 = f'/Users/florianwicher/Desktop/TestData/{scenario}ScenariosTest_4'
+    test_data_path_5 = f'/Users/florianwicher/Desktop/TestData/{scenario}ScenariosTest_5'
 
     test_data_paths = [test_data_path_0,test_data_path_1,test_data_path_2,test_data_path_3,test_data_path_4,test_data_path_5]
 
     
-    result_path = '/Users/florianwicher/Desktop/resultData/Leakage'
+    result_path = f'/Users/florianwicher/Desktop/resultData/{scenario}'
 
     ####
 
@@ -131,7 +139,7 @@ if __name__ == "__main__":
 
     ####
 
-    model='Simple-RNN'
+    
     
     test_files_0 = list(zip(test_data_files_0, test_info_files_0))  
     test_files_1 = list(zip(test_data_files_1, test_info_files_1))
@@ -142,6 +150,6 @@ if __name__ == "__main__":
 
     test_data_files = [test_files_0,test_files_1,test_files_2,test_files_3,test_files_4,test_files_5]
 
-    process_complete_train_test_run(test_data_paths, test_data_files, result_path, model)
+    process_complete_train_test_run(test_data_paths, test_data_files, result_path, model, scenario)
    
 

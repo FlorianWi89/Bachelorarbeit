@@ -3,6 +3,8 @@ from tensorflow.keras.layers import LSTM, GRU, Dropout, Dense, SimpleRNN
 import numpy as np
 import tensorflow as tf
 
+
+
 class RecurrentNeuralNetwork():
 
     def __init__(self, model_type = 'LSTM', units = 30):
@@ -31,7 +33,7 @@ class RecurrentNeuralNetwork():
             self.model.add(Dense(15)),
             self.model.add(Dense(1))
 
-        if self.network_type == 'Simple-RNN':
+        if self.network_type == 'RNN':
             self.model.add(SimpleRNN(self.units, return_sequences=True, activation='tanh', dropout=0.2))
             self.model.add(SimpleRNN(self.units, return_sequences=False, activation='tanh', dropout=0.2)),
             self.model.add(Dense(15, activation = 'tanh')),
@@ -70,24 +72,6 @@ class RecurrentNeuralNetwork():
 
         return np.max(errors_in_prediction), np.mean(errors_in_prediction), np.min(errors_in_prediction)
     
-    def plot_metrics(self):
-        pass
+    
 
-
-    #return r2 Score
-    def score(self, y_true, y_pred):
-        y_true = y_true.flatten()
-        y_pred = y_pred.flatten()
-        
-        #total sum of squares
-        tss = tf.reduce_sum(tf.square(y_true - tf.reduce_mean(y_true)))
-        
-        #residual sum of squares
-        rss = tf.reduce_sum(tf.square(y_true - y_pred))
-        
-        #return final r2 score
-        return (1 - (rss / tss)) 
-        
-        
-        
-        
+    

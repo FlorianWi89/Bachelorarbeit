@@ -42,14 +42,16 @@ class EnsembleSystem():
             x_train, y_train = X_train[:,inputs_idx], X_train[:,pressure_node]
     
             #Create model
-            model = self.model_class(model_type = self.model_type)
+            model = self.model_class()
 
             #fit model based on the given model type
-            if self.model_type in ['LSTM', 'GRU', 'Simple-RNN', 'LSTM_BD']:
+            if self.model_type in ['LSTM', 'GRU', 'RNN']:
                 model.fit(x_train, y_train, batch_size, epochs)
             else:
                 model.fit(x_train, y_train)
-                
+            
+            print(f"Fitted Model {pressure_node}")
+            print("#"*40)
             
             #build fault detector   
             
@@ -91,12 +93,13 @@ class EnsembleSystem():
 
             #let the model make a prediction on the new X data
             y_pred = model["model"].predict(x).flatten()
+            #print(y_pred)
             
             #build the residuals between y_true and y_pred
             suspicious_time_points += model["fault_detector"].get_suspicious_time_points(y_pred, y_true)
-                
+            
         suspicious_time_points = list(set(suspicious_time_points));suspicious_time_points.sort()
-        
+        print(f"Inference Done, Sus Time Points: {suspicious_time_points}")
         return suspicious_time_points
         
         
