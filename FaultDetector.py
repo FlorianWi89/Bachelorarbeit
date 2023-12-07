@@ -100,7 +100,7 @@ class EnsembleSystem():
             suspicious_time_points += model["fault_detector"].get_suspicious_time_points(y_pred, y_true)
             
         suspicious_time_points = list(set(suspicious_time_points));suspicious_time_points.sort()
-        print(f"Inference Done, Sus Time Points: {suspicious_time_points}")
+        #print(f"Inference Done, Sus Time Points: {suspicious_time_points}")
         return suspicious_time_points
         
         

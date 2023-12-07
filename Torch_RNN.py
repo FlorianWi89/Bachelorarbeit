@@ -4,7 +4,6 @@ import pandas as pd
 import torch.nn as nn
 import numpy as np
 from torch.utils.data import DataLoader, TensorDataset
-from sklearn.model_selection import train_test_split
 
 class Torch_RNN(nn.Module):
     def __init__(self):
@@ -29,7 +28,7 @@ class Torch_RNN(nn.Module):
     
     def fit(self, X, y, batch_size=128, epochs=1):
 
-        self.train()
+        
         # Konvertieren der Daten in PyTorch-Tensoren
         X_train = torch.tensor(X, dtype=torch.float32)
         y_train = torch.tensor(y, dtype=torch.float32).view(-1, 1)
@@ -43,6 +42,7 @@ class Torch_RNN(nn.Module):
         criterion = nn.L1Loss()  # Mean Absolute Error
         optimizer = torch.optim.Adam(self.parameters())
 
+        self.train(True)
         for epoch in range(epochs):
             start_time = time.time()
             for batch_X, batch_y in train_loader:

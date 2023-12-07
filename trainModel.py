@@ -4,6 +4,7 @@ from FaultDetector import EnsembleSystem
 from Torch_RNN import Torch_RNN
 from RecurrentNeuralNetwork import RecurrentNeuralNetwork
 from LinearModel import LinearModel
+from Torch_Networks import RNN, GRU, LSTM
 import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -14,13 +15,13 @@ def train_model(train_data, flow_nodes, pressure_nodes, model_type = 'LSTM', bat
 
     if model_type == 'LSTM':
         
-        model_ensemble = EnsembleSystem(RecurrentNeuralNetwork, flow_nodes, pressure_nodes, model_type='LSTM')
+        model_ensemble = EnsembleSystem(LSTM, flow_nodes, pressure_nodes, model_type='LSTM')
         model_ensemble.fit_seq(train_data, batch_size, epochs)
         return model_ensemble
 
     if model_type == 'GRU':
 
-        model_ensemble = EnsembleSystem(RecurrentNeuralNetwork, flow_nodes, pressure_nodes, model_type='GRU')
+        model_ensemble = EnsembleSystem(GRU, flow_nodes, pressure_nodes, model_type='GRU')
         model_ensemble.fit_seq(train_data, batch_size, epochs)
         return model_ensemble
 

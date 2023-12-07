@@ -1,5 +1,5 @@
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, GRU, Dropout, Dense, SimpleRNN
+from tensorflow.keras.layers import LSTM, GRU, Dropout, Dense
 import numpy as np
 import tensorflow as tf
 
@@ -21,20 +21,20 @@ class RecurrentNeuralNetwork():
             self.model.add(LSTM(self.units, return_sequences=True, activation='tanh')),
             self.model.add(Dropout(0.2)),
             self.model.add(LSTM(self.units, return_sequences=False, activation='tanh')),
-            self.model.add(Dense(15, activation="linear")),
-            self.model.add(Dense(15, activation="tanh")),
+            self.model.add(Dense(15, activation = 'tanh')),
+            self.model.add(Dense(15)),
             self.model.add(Dense(1))
             
         if self.network_type == 'GRU':
             self.model.add(GRU(self.units, return_sequences=True, activation='tanh'))
             self.model.add(Dropout(0.2)),
             self.model.add(GRU(self.units, return_sequences=False, activation='tanh')),
-            self.model.add(Dense(15)),
+            self.model.add(Dense(15, activation = 'tanh')),
             self.model.add(Dense(15)),
             self.model.add(Dense(1))
             
         self.model.compile(loss = 'mean_absolute_error',
-                   optimizer ='adam',
+                   optimizer =tf.keras.optimizers.legacy.Adam(learning_rate=0.01),
                    metrics=['mean_squared_error'])
         
         
@@ -47,7 +47,7 @@ class RecurrentNeuralNetwork():
         if y.ndim != 2:
             y = np.array(y).reshape(y.shape[0],1)
 
-        with tf.device('/cpu:0'):
+        with tf.device('/gpu:0'):
             self.history = self.model.fit(X, y, validation_split=0.2, epochs=epochs, batch_size=batch_size)
     
     #let the models predict and return a reshaped output
