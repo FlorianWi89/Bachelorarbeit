@@ -17,10 +17,10 @@ def process_complete_train_test_run(test_data_paths, test_data_files, result_pat
     data = pd.read_parquet(f'./Data/train_data_{scenario_type}.parquet.gzip').to_numpy().astype(np.float64)
 
     #choose the relative amount of trainig data
-    data = data[: int(0.5 * len(data))]
+    data = data[: int(1 * len(data))]
 
     #train the whole classifier ensemble of 29 models    
-    ensemble = train_model(data, 2, 29, model_type=model_type, batch_size=128 , epochs=2)
+    ensemble = train_model(data, 2, 29, model_type=model_type, batch_size=128 , epochs=3)
     
     result = []
 
@@ -77,12 +77,12 @@ if __name__ == "__main__":
     scenario = sys.argv[1]
     model = sys.argv[2]
     
-    test_data_path_0 = f'/Users/florianwicher/Desktop/TestData/{scenario}ScenariosTest_0'
-    test_data_path_1 = f'/Users/florianwicher/Desktop/TestData/{scenario}ScenariosTest_1'
-    test_data_path_2 = f'/Users/florianwicher/Desktop/TestData/{scenario}ScenariosTest_2'
-    test_data_path_3 = f'/Users/florianwicher/Desktop/TestData/{scenario}ScenariosTest_3'
-    test_data_path_4 = f'/Users/florianwicher/Desktop/TestData/{scenario}ScenariosTest_4'
-    test_data_path_5 = f'/Users/florianwicher/Desktop/TestData/{scenario}ScenariosTest_5'
+    test_data_path_0 = f'./Data/TestData/{scenario}ScenariosTest_0'
+    test_data_path_1 = f'./Data/TestData/{scenario}ScenariosTest_1'
+    test_data_path_2 = f'./Data/TestData/{scenario}ScenariosTest_2'
+    test_data_path_3 = f'./Data/TestData/{scenario}ScenariosTest_3'
+    test_data_path_4 = f'./Data/TestData/{scenario}ScenariosTest_4'
+    test_data_path_5 = f'./Data/TestData/{scenario}ScenariosTest_5'
 
     test_data_paths = [test_data_path_0,test_data_path_1,test_data_path_2,test_data_path_3,test_data_path_4,test_data_path_5]
 

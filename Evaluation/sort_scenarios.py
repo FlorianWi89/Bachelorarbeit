@@ -10,6 +10,8 @@ import json
 
 #3: speichere die dataframes als parquet mit daten eines szenarios
 
+#Hier müssend die Pfade angepasst werden
+
 sensor_fault_paths = [
     '/Users/florianwicher/Desktop/data/SensorFaultScenariosTest_0',
     '/Users/florianwicher/Desktop/data/SensorFaultScenariosTest_1',
