@@ -1,5 +1,4 @@
 import numpy as np
-from joblib import Parallel, delayed
 
 
 #class for predicting time series and identifying suspicious time points
@@ -19,7 +18,7 @@ class FaultDetector():
 #wrapper class for a model and its according fault detector
 class EnsembleSystem():
     def __init__(self, model_class, flow_nodes, pressure_nodes, model_type ,fault_detector = FaultDetector):
-        self.model_class = model_class          #wrapper class of the model
+        self.model_class = model_class         #wrapper class of the model
         self.flow_nodes = flow_nodes            #number of flow nodes in the network
         self.pressure_nodes = pressure_nodes    #number of pressure nodes in the network
         self.model_type = model_type            #model type
@@ -42,7 +41,7 @@ class EnsembleSystem():
             x_train, y_train = X_train[:,inputs_idx], X_train[:,pressure_node]
     
             #Create model
-            model = self.model_class()
+            model = self.model_class(self.model_type)
 
             #fit model based on the given model type
             if self.model_type in ['LSTM', 'GRU', 'RNN']:
@@ -53,7 +52,6 @@ class EnsembleSystem():
             
           
             
-            #build fault detector   
             
             max_error, mean_error, min_error = model.get_max_mean_min_prediction_error(x_train, y_train)
             #print(f"Model {pressure_node} trained -- Mean Error: ",1.2 * mean_error)

@@ -1,4 +1,4 @@
-from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
+from sklearn.linear_model import LinearRegression, Ridge
 import numpy as np
 
 class LinearModel():

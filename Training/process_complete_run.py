@@ -3,8 +3,8 @@ import numpy as np
 import os
 import sys
 from tqdm import tqdm
-from trainModel import train_model
-from utils import  eval_anomaly_detection
+from Training.trainModel import train_model
+from Evaluation.utils import  eval_anomaly_detection
 
 
 #function to process a complete train-test run
@@ -14,10 +14,10 @@ def process_complete_train_test_run(test_data_paths, test_data_files, result_pat
     if scenario_type == 'sensorfault':
         scenario_type= 'sensor_fault'
     #load the training data with reduced precision
-    data = pd.read_parquet(f'train_data_{scenario_type}.parquet.gzip').to_numpy().astype(np.float32)
+    data = pd.read_parquet(f'train_data_{scenario_type}.parquet.gzip').to_numpy().astype(np.float64)
 
     #choose the relative amount of trainig data
-    data = data[: int(0.01 * len(data))]
+    data = data[: int(0.5 * len(data))]
 
     #train the whole classifier ensemble of 29 models    
     ensemble = train_model(data, 2, 29, model_type=model_type, batch_size=128 , epochs=2)
@@ -43,7 +43,7 @@ def process_complete_train_test_run(test_data_paths, test_data_files, result_pat
             scenario_id = test_data.split('/')[-1].split('_')[0]
     
             #load model test data
-            test_data = pd.read_parquet(test_data).to_numpy().astype(np.float32)
+            test_data = pd.read_parquet(test_data).to_numpy().astype(np.float64)
 
             #load metadata  
             labels = np.load(test_data_info, allow_pickle=True)['y']

@@ -30,6 +30,7 @@ leakage_paths = [
 
 def dict_add(dict, key,value):
     if key not in dict:
+        print(key)
         dict[key] = [value]
     else:
         dict[key].append(value)
@@ -89,8 +90,13 @@ def store_leakage_scenarios_ordered(paths, dict):
             df_fault_info = pd.read_excel(os.path.join(folder, f"scenario{s_id}", "Leakages", fault_info_file), sheet_name="Info", engine='openpyxl')
 
             for _, row in df_fault_info.iterrows():
-                if row["Description"] == "Leak Type":
-                    dict_add(dict, row["Value"], os.path.join(folder, f"scenario{s_id}"))
+                if row["Description"] == "Leak Diameter":
+
+                    val = os.path.join(folder, f"scenario{s_id}").split('/')
+                    folder_id = val[-2].split('_')[1]
+                    scenario_id = val[-1].split('o')[1]
+                    
+                    dict_add(dict, row["Value"], {'folder_id':folder_id, 'scenario_id':scenario_id})
 
     for key in dict:
         print(f"Found {len(dict[key])} scenarios of type {key}")
@@ -104,8 +110,8 @@ if __name__ == '__main__':
     ordered_fault_scenarios = {}
     ordered_leakage_scenarios = {}
 
-    store_sensor_fault_scenarios_ordered(sensor_fault_paths, ordered_fault_scenarios)
-    print("="*50)
+    #store_sensor_fault_scenarios_ordered(sensor_fault_paths, ordered_fault_scenarios)
+    #print("="*50)
     store_leakage_scenarios_ordered(leakage_paths, ordered_leakage_scenarios)
 
 
