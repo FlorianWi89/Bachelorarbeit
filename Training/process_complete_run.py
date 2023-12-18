@@ -14,7 +14,7 @@ def process_complete_train_test_run(test_data_paths, test_data_files, result_pat
     if scenario_type == 'sensorfault':
         scenario_type= 'sensor_fault'
     #load the training data with reduced precision
-    data = pd.read_parquet(f'train_data_{scenario_type}.parquet.gzip').to_numpy().astype(np.float64)
+    data = pd.read_parquet(f'./Data/train_data_{scenario_type}.parquet.gzip').to_numpy().astype(np.float64)
 
     #choose the relative amount of trainig data
     data = data[: int(0.5 * len(data))]
@@ -87,9 +87,9 @@ if __name__ == "__main__":
     test_data_paths = [test_data_path_0,test_data_path_1,test_data_path_2,test_data_path_3,test_data_path_4,test_data_path_5]
 
     if scenario == 'SensorFault':
-        result_path = f'/Users/florianwicher/Desktop/resultData/Sensor_fault'
+        result_path = f'./Results/Sensor_fault/'
     if scenario == 'Leakage':
-        result_path = f'/Users/florianwicher/Desktop/resultData/Leakage'
+        result_path = f'./Results/Leakage'
 
     ####
 
