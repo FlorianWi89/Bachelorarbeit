@@ -36,7 +36,7 @@ def createRNN(layers=1, lr = 0.001):
         model.add(tf.keras.layers.Dense(1))
     
     model.compile(loss = 'mean_absolute_error',
-                   optimizer =tf.keras.optimizers.Adam(learning_rate=lr),
+                   optimizer =tf.keras.optimizers.legacy.Adam(learning_rate=lr),
                    metrics=['mean_absolute_error'])
     return model
 
@@ -69,7 +69,7 @@ def createGRU(layers=1, lr = 0.001):
         model.add(tf.keras.layers.Dense(1))
     
     model.compile(loss = 'mean_absolute_error',
-                   optimizer =tf.keras.optimizers.Adam(learning_rate=lr),
+                   optimizer =tf.keras.optimizers.legacy.Adam(learning_rate=lr),
                    metrics=['mean_absolute_error'])
     return model
 
@@ -101,7 +101,7 @@ def createLSTM(layers=1, lr = 0.001):
         model.add(tf.keras.layers.Dense(1))
     
     model.compile(loss = 'mean_absolute_error',
-                   optimizer =tf.keras.optimizers.Adam(learning_rate=lr),
+                   optimizer =tf.keras.optimizers.legacy.Adam(learning_rate=lr),
                    metrics=['mean_absolute_error'])
     return model
 
@@ -129,7 +129,7 @@ if __name__ == "__main__":
         scenario_type= 'sensor_fault'
 
     #load the training data with reduced precision
-    data = pd.read_parquet(f'train_data_{scenario_type}.parquet.gzip').to_numpy().astype(np.float64)
+    data = pd.read_parquet(f'../Data/train_data_{scenario_type}.parquet.gzip').to_numpy().astype(np.float64)
 
     data = data[: int(float(data_size) * len(data))]
 
@@ -144,9 +144,7 @@ if __name__ == "__main__":
     y = np.array(y).reshape(y.shape[0],1)
 
     #output paths
-    RNN_path = f'/Users/florianwicher/Desktop/Bachelorarbeit/Plots/{scenario}/RNN'
-    GRU_path = f'/Users/florianwicher/Desktop/Bachelorarbeit/Plots/{scenario}/GRU'
-    LSTM_path = f'/Users/florianwicher/Desktop/Bachelorarbeit/Plots/{scenario}/LSTM'
+    
 
     x_plot_data = [i+1 for i in range(epochs)]
 
@@ -179,60 +177,60 @@ if __name__ == "__main__":
             RNN = createRNN(layers = i)
             
             with tf.device('/cpu:0'):
-                history = RNN.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.15)
+                history = RNN.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.10)
             results['RNN']['Train_Loss(MAE)'].append(history.history['loss'])
             results['RNN']['Val_Loss(MAE)'].append(history.history['val_mean_absolute_error'])
             
             with tf.device('/cpu:0'):
-                history = GRU.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.15)
+                history = GRU.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.10)
             results['GRU']['Train_Loss(MAE)'].append(history.history['loss'])
             results['GRU']['Val_Loss(MAE)'].append(history.history['val_mean_absolute_error'])
             
             with tf.device('/cpu:0'):
-                history = LSTM.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.15)
+                history = LSTM.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.10)
             results['LSTM']['Train_Loss(MAE)'].append(history.history['loss'])
             results['LSTM']['Val_Loss(MAE)'].append(history.history['val_mean_absolute_error'])
 
             
-        with open("Architecture_results.json", "w") as outfile: 
+        with open(f"Architecture_results_{scenario}.json", "w") as outfile: 
                 json.dump(results, outfile)
 
         data = results
         for goal in ['Train', 'Val']:
             # Plot für RNN
             plt.figure(figsize=(15, 3))
-            plt.plot(x_plot_data, data['RNN'][f'{goal}_Loss(MAE)'][0], label='1 Layer')
-            plt.plot(x_plot_data, data['RNN'][f'{goal}_Loss(MAE)'][1], label='2 Layers')
-            plt.plot(x_plot_data, data['RNN'][f'{goal}_Loss(MAE)'][2], label='3 Layers')
+            plt.plot(x_plot_data, data['RNN'][f'{goal}_Loss(MAE)'][0], label='1 Layer', marker='.')
+            plt.plot(x_plot_data, data['RNN'][f'{goal}_Loss(MAE)'][1], label='2 Layers', marker='.')
+            plt.plot(x_plot_data, data['RNN'][f'{goal}_Loss(MAE)'][2], label='3 Layers', marker='.')
             plt.grid(True)
             plt.xlabel('Epoch')
             plt.ylabel('MAE Loss')
             plt.legend(loc='upper right')
-            plt.savefig(os.path.join(RNN_path, f'RNN_{goal}_Layers_Loss.png'), bbox_inches="tight")
+            plt.savefig(f'Plots/{scenario}_RNN_{goal}_Layers_Loss.png', bbox_inches="tight")
             #plt.show()
 
             # Plot für GRU
             plt.figure(figsize=(15, 3))
-            plt.plot(x_plot_data, data['GRU'][f'{goal}_Loss(MAE)'][0], label='1 Layer')
-            plt.plot(x_plot_data, data['GRU'][f'{goal}_Loss(MAE)'][1], label='2 Layers')
-            plt.plot(x_plot_data, data['GRU'][f'{goal}_Loss(MAE)'][2], label='3 Layers')
+            plt.plot(x_plot_data, data['GRU'][f'{goal}_Loss(MAE)'][0], label='1 Layer', marker='.')
+            plt.plot(x_plot_data, data['GRU'][f'{goal}_Loss(MAE)'][1], label='2 Layers', marker='.')
+            plt.plot(x_plot_data, data['GRU'][f'{goal}_Loss(MAE)'][2], label='3 Layers', marker='.')
             plt.grid(True)
             plt.xlabel('Epoch')
             plt.ylabel('MAE Loss')
             plt.legend(loc='upper right')
-            plt.savefig(os.path.join(GRU_path, f'GRU_{goal}_Layers_Loss.png'), bbox_inches="tight")
+            plt.savefig(f'Plots/{scenario}_GRU_{goal}_Layers_Loss.png', bbox_inches="tight")
             #plt.show()
 
             # Plot für LSTM
             plt.figure(figsize=(15, 3))
-            plt.plot(x_plot_data, data['LSTM'][f'{goal}_Loss(MAE)'][0], label='1 Layer')
-            plt.plot(x_plot_data, data['LSTM'][f'{goal}_Loss(MAE)'][1], label='2 Layers')
-            plt.plot(x_plot_data, data['LSTM'][f'{goal}_Loss(MAE)'][2], label='3 Layers')
+            plt.plot(x_plot_data, data['LSTM'][f'{goal}_Loss(MAE)'][0], label='1 Layer', marker='.')
+            plt.plot(x_plot_data, data['LSTM'][f'{goal}_Loss(MAE)'][1], label='2 Layers', marker='.')
+            plt.plot(x_plot_data, data['LSTM'][f'{goal}_Loss(MAE)'][2], label='3 Layers', marker='.')
             plt.grid(True)
             plt.xlabel('Epoch')
             plt.ylabel('MAE Loss')
             plt.legend(loc='upper right')
-            plt.savefig(os.path.join(LSTM_path, f'LSTM_{goal}_Layers_Loss.png'), bbox_inches="tight")
+            plt.savefig(f'Plots/{scenario}_LSTM_{goal}_Layers_Loss.png', bbox_inches="tight")
             #plt.show()
 
 
@@ -250,62 +248,62 @@ if __name__ == "__main__":
             
             
             with tf.device('/cpu:0'):
-                history = RNN.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.15)
+                history = RNN.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.10)
             results['RNN']['Train_Loss(MAE)'].append(history.history['loss'])
             results['RNN']['Val_Loss(MAE)'].append(history.history['val_mean_absolute_error'])
             
             with tf.device('/cpu:0'):
-                history = GRU.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.15)
+                history = GRU.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.10)
             results['GRU']['Train_Loss(MAE)'].append(history.history['loss'])
             results['GRU']['Val_Loss(MAE)'].append(history.history['val_mean_absolute_error'])
             
             with tf.device('/cpu:0'):
-                history = LSTM.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.15)
+                history = LSTM.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.10)
             results['LSTM']['Train_Loss(MAE)'].append(history.history['loss'])
             results['LSTM']['Val_Loss(MAE)'].append(history.history['val_mean_absolute_error'])
 
-        with open("LR_resuts.json", "w") as outfile: 
+        with open(f"LR_results_{scenario}.json", "w") as outfile: 
                 json.dump(results, outfile)
 
         data = results
         for goal in ['Train', 'Val']:
                 # Plot für RNN
             plt.figure(figsize=(15, 3))
-            plt.plot(data['RNN'][f'{goal}_Loss(MAE)'][0], label='LR = 0.05')
-            plt.plot(data['RNN'][f'{goal}_Loss(MAE)'][1], label='LR = 0.01')
-            plt.plot(data['RNN'][f'{goal}_Loss(MAE)'][2], label='LR = 0.005')
-            plt.plot(data['RNN'][f'{goal}_Loss(MAE)'][3], label='LR = 0.001')
+            plt.plot(x_plot_data, data['RNN'][f'{goal}_Loss(MAE)'][0], label='LR = 0.05', marker='.')
+            plt.plot(x_plot_data, data['RNN'][f'{goal}_Loss(MAE)'][1], label='LR = 0.01', marker='.')
+            plt.plot(x_plot_data, data['RNN'][f'{goal}_Loss(MAE)'][2], label='LR = 0.005', marker='.')
+            plt.plot(x_plot_data, data['RNN'][f'{goal}_Loss(MAE)'][3], label='LR = 0.001', marker='.')
             plt.grid(True)
             plt.xlabel('Epoch')
             plt.ylabel('MAE Loss')
             plt.legend(loc='upper right')
-            plt.savefig(os.path.join(RNN_path, f'RNN_{goal}_LR_Loss.png'), bbox_inches="tight")
+            plt.savefig(f'Plots/{scenario}_RNN_{goal}_LR_Loss.png', bbox_inches="tight")
             #plt.show()
 
             # Plot für GRU
             plt.figure(figsize=(15, 3))
-            plt.plot(data['GRU'][f'{goal}_Loss(MAE)'][0], label='LR = 0.05')
-            plt.plot(data['GRU'][f'{goal}_Loss(MAE)'][1], label='LR = 0.01')
-            plt.plot(data['GRU'][f'{goal}_Loss(MAE)'][2], label='LR = 0.005')
-            plt.plot(data['GRU'][f'{goal}_Loss(MAE)'][3], label='LR = 0.001')
+            plt.plot(x_plot_data, data['GRU'][f'{goal}_Loss(MAE)'][0], label='LR = 0.05', marker='.')
+            plt.plot(x_plot_data, data['GRU'][f'{goal}_Loss(MAE)'][1], label='LR = 0.01', marker='.')
+            plt.plot(x_plot_data, data['GRU'][f'{goal}_Loss(MAE)'][2], label='LR = 0.005', marker='.')
+            plt.plot(x_plot_data, data['GRU'][f'{goal}_Loss(MAE)'][3], label='LR = 0.001', marker='.')
             plt.grid(True)
             plt.xlabel('Epoch')
             plt.ylabel('MAE Loss')
             plt.legend(loc='upper right')
-            plt.savefig(os.path.join(GRU_path, f'GRU_{goal}_LR_Loss.png'), bbox_inches="tight")
+            plt.savefig(f'Plots/{scenario}_GRU_{goal}_LR_Loss.png', bbox_inches="tight")
             #plt.show()
 
             # Plot für LSTM
             plt.figure(figsize=(15, 3))
-            plt.plot(data['LSTM'][f'{goal}_Loss(MAE)'][0], label='LR = 0.05')
-            plt.plot(data['LSTM'][f'{goal}_Loss(MAE)'][1], label='LR = 0.01')
-            plt.plot(data['LSTM'][f'{goal}_Loss(MAE)'][2], label='LR = 0.005')
-            plt.plot(data['LSTM'][f'{goal}_Loss(MAE)'][3], label='LR = 0.001')
+            plt.plot(x_plot_data, data['LSTM'][f'{goal}_Loss(MAE)'][0], label='LR = 0.05', marker='.')
+            plt.plot(x_plot_data, data['LSTM'][f'{goal}_Loss(MAE)'][1], label='LR = 0.01', marker='.')
+            plt.plot(x_plot_data, data['LSTM'][f'{goal}_Loss(MAE)'][2], label='LR = 0.005', marker='.')
+            plt.plot(x_plot_data, data['LSTM'][f'{goal}_Loss(MAE)'][3], label='LR = 0.001', marker='.')
             plt.grid(True)
             plt.xlabel('Epoch')
             plt.ylabel('MAE Loss')
             plt.legend(loc='upper right')
-            plt.savefig(os.path.join(LSTM_path, f'LSTM_{goal}_LR_Loss.png'), bbox_inches="tight")
+            plt.savefig(f'Plots/{scenario}_LSTM_{goal}_LR_Loss.png', bbox_inches="tight")
             #plt.show()
 
     if parameter == 'BatchSize':
@@ -320,21 +318,21 @@ if __name__ == "__main__":
             
             
             with tf.device('/cpu:0'):
-                history = RNN.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.15)
+                history = RNN.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.10)
             results['RNN']['Train_Loss(MAE)'].append(history.history['loss'])
             results['RNN']['Val_Loss(MAE)'].append(history.history['val_mean_absolute_error'])
             
             with tf.device('/cpu:0'):
-                history = GRU.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.15)
+                history = GRU.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.10)
             results['GRU']['Train_Loss(MAE)'].append(history.history['loss'])
             results['GRU']['Val_Loss(MAE)'].append(history.history['val_mean_absolute_error'])
             
             with tf.device('/cpu:0'):
-                history = LSTM.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.15)
+                history = LSTM.fit(X, y, batch_size=batch_size, epochs=epochs, validation_split = 0.10)
             results['LSTM']['Train_Loss(MAE)'].append(history.history['loss'])
             results['LSTM']['Val_Loss(MAE)'].append(history.history['val_mean_absolute_error'])
 
-        with open("BatchSize_resuts.json", "w") as outfile: 
+        with open(f"BatchSize_results_{scenario}.json", "w") as outfile: 
                 json.dump(results, outfile)
         
 
@@ -342,42 +340,42 @@ if __name__ == "__main__":
         for goal in ['Train', 'Val']:
                 # Plot für RNN
             plt.figure(figsize=(15, 3))
-            plt.plot(data['RNN'][f'{goal}_Loss(MAE)'][0], label='BS = 32')
-            plt.plot(data['RNN'][f'{goal}_Loss(MAE)'][1], label='BS = 64')
-            plt.plot(data['RNN'][f'{goal}_Loss(MAE)'][2], label='BS = 128')
-            plt.plot(data['RNN'][f'{goal}_Loss(MAE)'][3], label='BS = 256')
-            plt.plot(data['RNN'][f'{goal}_Loss(MAE)'][4], label='BS = 512')
+            plt.plot(x_plot_data, data['RNN'][f'{goal}_Loss(MAE)'][0], label='BS = 32', marker='.')
+            plt.plot(x_plot_data, data['RNN'][f'{goal}_Loss(MAE)'][1], label='BS = 64', marker='.')
+            plt.plot(x_plot_data, data['RNN'][f'{goal}_Loss(MAE)'][2], label='BS = 128', marker='.')
+            plt.plot(x_plot_data, data['RNN'][f'{goal}_Loss(MAE)'][3], label='BS = 256', marker='.')
+            plt.plot(x_plot_data, data['RNN'][f'{goal}_Loss(MAE)'][4], label='BS = 512', marker='.')
             plt.grid(True)
             plt.xlabel('Epoch')
             plt.ylabel('MAE Loss')
             plt.legend(loc='upper right')
-            plt.savefig(os.path.join(RNN_path, f'RNN_{goal}_BatchSize_Loss.png'), bbox_inches="tight")
+            plt.savefig(f'Plots/{scenario}_RNN_{goal}_BatchSize_Loss.png', bbox_inches="tight")
             #plt.show()
 
             # Plot für GRU
             plt.figure(figsize=(15, 3))
-            plt.plot(data['GRU'][f'{goal}_Loss(MAE)'][0], label='BS = 32')
-            plt.plot(data['GRU'][f'{goal}_Loss(MAE)'][1], label='BS = 64')
-            plt.plot(data['GRU'][f'{goal}_Loss(MAE)'][2], label='BS = 128')
-            plt.plot(data['GRU'][f'{goal}_Loss(MAE)'][3], label='BS = 256')
-            plt.plot(data['GRU'][f'{goal}_Loss(MAE)'][4], label='BS = 512')
+            plt.plot(x_plot_data, data['GRU'][f'{goal}_Loss(MAE)'][0], label='BS = 32', marker='.')
+            plt.plot(x_plot_data, data['GRU'][f'{goal}_Loss(MAE)'][1], label='BS = 64', marker='.')
+            plt.plot(x_plot_data, data['GRU'][f'{goal}_Loss(MAE)'][2], label='BS = 128', marker='.')
+            plt.plot(x_plot_data, data['GRU'][f'{goal}_Loss(MAE)'][3], label='BS = 256', marker='.')
+            plt.plot(x_plot_data, data['GRU'][f'{goal}_Loss(MAE)'][4], label='BS = 512', marker='.')
             plt.grid(True)
             plt.xlabel('Epoch')
             plt.ylabel('MAE Loss')
             plt.legend(loc='upper right')
-            plt.savefig(os.path.join(GRU_path, f'GRU_{goal}_BatchSize_Loss.png'), bbox_inches="tight")
+            plt.savefig(f'Plots/{scenario}_GRU_{goal}_BatchSize_Loss.png', bbox_inches="tight")
             #plt.show()
 
             # Plot für LSTM
             plt.figure(figsize=(15, 3))
-            plt.plot(data['LSTM'][f'{goal}_Loss(MAE)'][0], label='BS = 32')
-            plt.plot(data['LSTM'][f'{goal}_Loss(MAE)'][1], label='BS = 64')
-            plt.plot(data['LSTM'][f'{goal}_Loss(MAE)'][2], label='BS = 128')
-            plt.plot(data['LSTM'][f'{goal}_Loss(MAE)'][3], label='BS = 256')
-            plt.plot(data['LSTM'][f'{goal}_Loss(MAE)'][4], label='BS = 512')
+            plt.plot(x_plot_data, data['LSTM'][f'{goal}_Loss(MAE)'][0], label='BS = 32', marker='.')
+            plt.plot(x_plot_data, data['LSTM'][f'{goal}_Loss(MAE)'][1], label='BS = 64', marker='.')
+            plt.plot(x_plot_data, data['LSTM'][f'{goal}_Loss(MAE)'][2], label='BS = 128', marker='.')
+            plt.plot(x_plot_data, data['LSTM'][f'{goal}_Loss(MAE)'][3], label='BS = 256', marker='.')
+            plt.plot(x_plot_data, data['LSTM'][f'{goal}_Loss(MAE)'][4], label='BS = 512', marker='.')
             plt.grid(True)
             plt.xlabel('Epoch')
             plt.ylabel('MAE Loss')
             plt.legend(loc='upper right')
-            plt.savefig(os.path.join(LSTM_path, f'LSTM_{goal}_BatchSize_Loss.png'), bbox_inches="tight")
+            plt.savefig(f'Plots/{scenario}_LSTM_{goal}_BatchSize_Loss.png', bbox_inches="tight")
             #plt.show()
